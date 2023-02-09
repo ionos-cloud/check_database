@@ -1,0 +1,41 @@
+# Use include_dir to include all config files from this directory. Each file
+# can contain query or database sections.
+# include_dir = "conf.d"
+
+# query defines a query that can be run on a host.
+#
+# The identifier of the query must be unique. Add a description, which will be
+# printed when listing the available queries.
+[query.test]
+desc = "return variables"
+# The message is returned to stdout. The following variables are registered to
+# use:
+#   .Result - contains the result of the query
+#   .DBName - the name of the database the query was called with
+#   .Query - contains the fields configured
+#   .Query.Parameters - the array of parameter values in the order defined in the config
+message = "queue length with entries older than 24h on {{ .DBName }}: {{ .Result }}\n"
+# The query must only return one value which can be of type float or int.
+# Use $1 to $n to access the parameters defined in the params array.
+# Every parameter must be used in the query, else the database will raise an
+# error.
+query = "select $1::int where 1 = $2::int"
+# Set the parameters required for the query. When adding a desc field, this will be
+# returned in the help.
+params = [
+	{name = "return" },
+	{name = "trigger", desc = "Parameter for madness!"},
+]
+
+# database defines the necessary login data to a database.
+#
+# Define each database with its own handle to run queries on.
+[database.localhost]
+# Set the type of the database. Supported are 'mysql' and 'postgres' (default).
+type = "postgres"
+hostname = "/tmp"
+database = "testdb"
+username = "testuser"
+# Leave the password out, when it is not needed.
+# password = "testpassword"
+ssl = "disable"
